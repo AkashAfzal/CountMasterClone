@@ -3,7 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Character
+  - Enemy
+  - Gate
+  - Obstacle
+  - EnemyCollection
+  - Ramp
   layers:
   - Default
   - TransparentFX
@@ -11,13 +17,13 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Obstacle
+  - Character
+  - Enemy
+  - Gate
+  - Ground
+  - EnemyCollection
+  - Ramp
   - 
   - 
   - 
