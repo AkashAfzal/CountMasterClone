@@ -92,16 +92,16 @@ public class PlayerController : Singleton<PlayerController>
 			characterSizeText.transform.parent.gameObject.SetActive(false);
 			if (IsFighting)
 				TargetEnemyGroup.Victory();
-			Movement.inputs.isBlockAllInput = true;
+			Movement.userCanControl = false;
 			LevelController.instance.Fail();
 		}
 	}
 
 	public void FightWithEnemyGroup(EnemyCollection enemyGroup)
 	{
-		TargetEnemyGroup                = enemyGroup;
-		IsFighting                      = true;
-		Movement.inputs.isBlockAllInput = true;
+		TargetEnemyGroup        = enemyGroup;
+		IsFighting              = true;
+		Movement.userCanControl = false;
 		Movement.FightMove(enemyGroup.transform);
 	}
 
@@ -109,8 +109,8 @@ public class PlayerController : Singleton<PlayerController>
 	{
 		if (allCharacters.Count > 0)
 		{
-			IsFighting                      = true;
-			Movement.inputs.isBlockAllInput = false;
+			IsFighting              = true;
+			Movement.userCanControl = true;
 		}
 	}
 
