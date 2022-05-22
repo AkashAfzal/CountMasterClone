@@ -81,7 +81,7 @@ public class PlayerController : Singleton<PlayerController>
 			characterSizeText.transform.parent.gameObject.SetActive(false);
 			if (IsFighting)
 				TargetEnemyGroup.Victory();
-			Movement.userCanControl = false;
+			Movement.inputs.isAllInputActive = false;
 			SoundManager.Instance.PlayRunSounds(false);
 			GameManager.Instance.ChangeGameState(GameState.Fail);
 		}
@@ -89,9 +89,9 @@ public class PlayerController : Singleton<PlayerController>
 
 	public void FightWithEnemyGroup(EnemyCollection enemyGroup)
 	{
-		TargetEnemyGroup        = enemyGroup;
-		IsFighting              = true;
-		Movement.userCanControl = false;
+		TargetEnemyGroup                 = enemyGroup;
+		IsFighting                       = true;
+		Movement.inputs.isAllInputActive = false;
 		Movement.FightMove(enemyGroup.transform);
 	}
 
@@ -99,8 +99,8 @@ public class PlayerController : Singleton<PlayerController>
 	{
 		if (allCharacters.Count > 0)
 		{
-			IsFighting              = true;
-			Movement.userCanControl = true;
+			IsFighting                       = true;
+			Movement.inputs.isAllInputActive = true;
 			Movement.StopFightMove();
 		}
 	}

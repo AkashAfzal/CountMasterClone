@@ -94,7 +94,7 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 		public void PlayStairsUpSound()
 		{
 			stairsUpSource.PlayOneShot(stairSound);
-			stairsUpSource.pitch += 0.1f;
+			stairsUpSource.pitch += 0.01f;
 		}
 
 		IEnumerator PlayRunSoundsCo()

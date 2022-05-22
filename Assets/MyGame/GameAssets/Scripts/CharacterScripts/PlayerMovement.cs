@@ -7,7 +7,6 @@ public class PlayerMovement : MonoBehaviour
 {
 
 	public InputData                            inputs;
-	public Finish                               finish;
 	public Cinemachine.CinemachineVirtualCamera finishCam;
 
 	Vector3          CharStartPos = Vector3.zero;
@@ -23,10 +22,6 @@ public class PlayerMovement : MonoBehaviour
 	bool    FightStart;
 	Vector3 TargetPos;
 
-	public bool userCanControl;
-	public bool moveForward;
-	public bool moveHorizontal;
-
 	void OnEnable() => GameManager.onGamePlayEvent += StartGame;
 
 	void OnDisable() => GameManager.onGamePlayEvent -= StartGame;
@@ -37,19 +32,22 @@ public class PlayerMovement : MonoBehaviour
 		MainCamera       = Camera.main;
 		StartCoroutine(UpdateLeftRightBoundary());
 		SoundManager.Instance.PlayRunSounds(true);
+		inputs.isAllInputActive        = true;
+		inputs.isHorizontalInputActive = true;
+		inputs.isVerticalInputActive   = true;
 	}
 
 	private void Update()
 	{
 		if (GameManager.Instance.GameCurrentState == GameState.Gameplay || GameManager.Instance.GameCurrentState == GameState.FinalMomentum)
 		{
-			if (userCanControl)
+			if (inputs.isAllInputActive)
 			{
 				ForwardMovement();
 				HorizontalMovement();
 			}
 
-			if (FightStart && !userCanControl)
+			if (FightStart && !inputs.isAllInputActive)
 			{
 				var position = transform.position;
 				position           = Vector3.MoveTowards(position, position + TargetPos, 1.5f * Time.deltaTime);
@@ -60,7 +58,7 @@ public class PlayerMovement : MonoBehaviour
 
 	private void ForwardMovement()
 	{
-		if (!moveForward) return;
+		if (!inputs.isVerticalInputActive) return;
 		var position = transform.position;
 		position           = Vector3.MoveTowards(position, position + Vector3.forward, inputs.MoveSpeed * Time.deltaTime);
 		transform.position = position;
@@ -68,7 +66,7 @@ public class PlayerMovement : MonoBehaviour
 
 	void HorizontalMovement()
 	{
-		if (moveHorizontal)
+		if (inputs.isHorizontalInputActive)
 		{
 			InputPoint   = Input.mousePosition;
 			InputPoint.z = inputs.CameraOffset;
@@ -147,7 +145,7 @@ public class PlayerMovement : MonoBehaviour
 
 	public IEnumerator MoveCenter()
 	{
-		moveHorizontal = false;
+		inputs.isHorizontalInputActive = false;
 		while (transform.position != new Vector3(0f, transform.position.y, transform.position.z))
 		{
 			transform.position = Vector3.MoveTowards(transform.position, new Vector3(0f, transform.position.y, transform.position.z), inputs.MaxHorizontalSpeed * Time.deltaTime);
@@ -160,7 +158,8 @@ public class PlayerMovement : MonoBehaviour
 
 	private IEnumerator FinishMove()
 	{
-		userCanControl = false;
+		var finish = FindObjectOfType<Finish>();
+		inputs.isAllInputActive = false;
 		int     count = 0;
 		Vector3 targetPos;
 		while (transform.position != finish.transform.position)

@@ -20,10 +20,9 @@ namespace GameAssets.GameSet.GameDevUtils.Controller.Scripts
 		public float MaxXLimit          => clampLimits.y;
 		public float CameraOffset       => cameraOffset;
 
-
-		[HideInInspector] public bool isBlockAllInput;
-		[HideInInspector] public bool isBlockVerticalInput;
-		[HideInInspector] public bool isBlockHorizontalInput;
+		[HideInInspector] public bool isAllInputActive;
+		[HideInInspector] public bool isVerticalInputActive;
+		[HideInInspector] public bool isHorizontalInputActive;
 
 	}
 
