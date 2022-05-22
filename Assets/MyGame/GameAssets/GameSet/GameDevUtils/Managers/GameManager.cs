@@ -136,7 +136,7 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 					
 					// Elephant.LevelCompleted(InfinityCurrentLevel);
 					// GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete, "LevelComplete", InfinityCurrentLevel);
-					HapticFeedback.Generate(UIFeedbackType.Success);
+					// HapticFeedback.Generate(UIFeedbackType.Success);
 					NextUnlockLevel();
 					onCompleteEvent?.Invoke();
 					break;
@@ -149,7 +149,7 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 
 					// Elephant.LevelFailed(InfinityCurrentLevel);
 					// GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, "LevelFail", InfinityCurrentLevel);
-					HapticFeedback.Generate(UIFeedbackType.Error);
+					// HapticFeedback.Generate(UIFeedbackType.Error);
 					onFailedEvent?.Invoke();
 					break;
 			}
