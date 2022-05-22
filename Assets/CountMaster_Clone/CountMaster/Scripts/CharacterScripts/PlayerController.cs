@@ -111,6 +111,7 @@ public class PlayerController : Singleton<PlayerController>
 		{
 			IsFighting              = true;
 			Movement.userCanControl = true;
+			Movement.StopFightMove();
 		}
 	}
 
