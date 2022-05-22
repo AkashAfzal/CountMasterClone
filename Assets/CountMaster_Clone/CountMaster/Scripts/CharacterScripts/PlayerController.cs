@@ -1,43 +1,50 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using TMPro;
 
 public class PlayerController : Singleton<PlayerController>
 {
 
-	public  List<Character>                      allCharacters           = new List<Character>();
-	[SerializeField]private  int                                  startCharacterSize   = 2;
-	public  int                                  currentCharacterSize = 0;
-	public  TMP_Text                             characterSizeText;
-	public  TMP_Text                             addedSizeText;
-	public  List<Transform>                      finishObjects     = new List<Transform>();
-	public  float                                distBTWCharacters = 0.4f;
-	public  Cinemachine.CinemachineVirtualCamera gamePlayCam;
-	private IEnumerator                          finishCo;
-	private bool                                 isFighting = false;
-	private PlayerMovement                       movement;
-	private EnemyCollection                      targetEnemyGroup;
-	
+	//private Inspector Fields
+	[SerializeField] int                                  startCharacterSize = 2;
+	[SerializeField] float                                distBtwCharacters  = 0.4f;
+	[SerializeField] TMP_Text                             characterSizeText;
+	[SerializeField] TMP_Text                             addedSizeText;
+	[SerializeField] Cinemachine.CinemachineVirtualCamera gamePlayCam;
+
+	//public Hidden Fields
+	[HideInInspector] public int             currentCharacterSize = 0;
+	[HideInInspector] public List<Character> allCharacters        = new List<Character>();
+	//[HideInInspector] 
+	public List<Transform> finishObjects        = new List<Transform>();
+
+
+	//Private Fields 
+	private bool            IsFighting = false;
+	private IEnumerator     FinishCo;
+	private PlayerMovement  Movement;
+	private EnemyCollection TargetEnemyGroup;
 
 
 	private void Start()
 	{
-		movement = GetComponent<PlayerMovement>();
-		AddCharacter(startCharacterSize, true);
+		Movement = GetComponent<PlayerMovement>();
+		AddNewCharacter(startCharacterSize, true);
 	}
 
-	public void AddCharacter(int size, bool isStart)
+	public void AddNewCharacter(int size, bool isStart)
 	{
 		if (!isStart)
-			StartCoroutine(AddedSizeAnimation(size));
+			AddedSizeAnimation(size);
 		for (int i = 0; i < size; i++)
 		{
 			Vector3    pos            = new Vector3(Random.Range(transform.position.x - 1, transform.position.x + 1), transform.position.y, Random.Range(transform.position.z - 1, transform.position.z + 1));
-			GameObject addedCharacter = CharacterPool.instance.GetCharacter(); //Instantiate(characterPrefab, pos, Quaternion.identity);
+			GameObject addedCharacter = CharacterPool.instance.GetCharacter();
 			addedCharacter.SetActive(true);
-			addedCharacter.transform.position              = pos;
-			addedCharacter.transform.parent                = transform;
+			addedCharacter.transform.position           = pos;
+			addedCharacter.transform.parent             = transform;
 			addedCharacter.GetComponent<Character>().id = allCharacters.Count;
 			currentCharacterSize++;
 			allCharacters.Add(addedCharacter.GetComponent<Character>());
@@ -45,20 +52,16 @@ public class PlayerController : Singleton<PlayerController>
 		}
 	}
 
-	IEnumerator AddedSizeAnimation(int size)
+	void AddedSizeAnimation(int size)
 	{
-		Vector3 startPos  = addedSizeText.transform.localPosition;
-		Vector3 targetPos = addedSizeText.transform.localPosition + new Vector3(0f, 1f, 0f);
+		Vector3 startPos = addedSizeText.transform.localPosition;
 		addedSizeText.text = "+" + size.ToString();
 		addedSizeText.gameObject.SetActive(true);
-		while (addedSizeText.transform.localPosition != targetPos)
+		addedSizeText.transform.DOLocalMove(addedSizeText.transform.localPosition.SetY(1), 0.1f).SetEase(Ease.OutBounce).OnComplete(() =>
 		{
-			addedSizeText.transform.localPosition = Vector3.MoveTowards(addedSizeText.transform.localPosition, targetPos, 2f * Time.deltaTime);
-			yield return null;
-		}
-
-		addedSizeText.gameObject.SetActive(false);
-		addedSizeText.transform.localPosition = startPos;
+			addedSizeText.gameObject.SetActive(false);
+			addedSizeText.transform.localPosition = startPos;
+		});
 	}
 
 	public void RemoveCharacter(int size)
@@ -73,56 +76,42 @@ public class PlayerController : Singleton<PlayerController>
 		}
 	}
 
-	public void CharacterDeath(int index)
+	public void CharacterDeath(int id)
 	{
-		GameObject removedCharacter = allCharacters[index].gameObject;
-		allCharacters.RemoveAt(index);
-		for (int i = allCharacters.Count - 1; i > index - 1; i--)
+		allCharacters.RemoveAt(id);
+		for (int i = allCharacters.Count - 1; i > id - 1; i--)
 		{
-			if (i > 0)
-			{
-				allCharacters[i].id = i;
-			}
-			else
-			{
-				allCharacters[i].id = 0;
-			}
+			allCharacters[i].id = i > 0 ? i : 0;
 		}
 
 		currentCharacterSize--;
 		UpdateCharacterSizeText();
 		if (allCharacters.Count == 0)
 		{
-			movement.StopFightMove();
+			Movement.StopFightMove();
 			characterSizeText.transform.parent.gameObject.SetActive(false);
-			if (isFighting)
-				targetEnemyGroup.Victory();
-			movement.userCanControl = false;
+			if (IsFighting)
+				TargetEnemyGroup.Victory();
+			Movement.inputs.isBlockAllInput = true;
 			LevelController.instance.Fail();
 		}
 	}
 
 	public void FightWithEnemyGroup(EnemyCollection enemyGroup)
 	{
-		targetEnemyGroup        = enemyGroup;
-		isFighting              = true;
-		movement.userCanControl = false;
-		movement.FightMove(enemyGroup.transform);
+		TargetEnemyGroup                = enemyGroup;
+		IsFighting                      = true;
+		Movement.inputs.isBlockAllInput = true;
+		Movement.FightMove(enemyGroup.transform);
 	}
 
 	public void FightEnded()
 	{
 		if (allCharacters.Count > 0)
 		{
-			isFighting              = true;
-			movement.userCanControl = true;
+			IsFighting                      = true;
+			Movement.inputs.isBlockAllInput = false;
 		}
-	}
-
-	public void DecreaseCharacterSize()
-	{
-		currentCharacterSize--;
-		UpdateCharacterSizeText();
 	}
 
 	private void UpdateCharacterSizeText()
@@ -132,26 +121,17 @@ public class PlayerController : Singleton<PlayerController>
 
 	public void Finish()
 	{
-		if (finishCo == null)
+		if (FinishCo == null)
 		{
-			finishCo = FinishShape();
-			StartCoroutine(finishCo);
-		}
-	}
-
-	public void Attack(Transform enemy)
-	{
-		movement.userCanControl = false;
-		for (int i = 0; i < allCharacters.Count; i++)
-		{
-			allCharacters[i].targetPos = enemy;
+			FinishCo = FinishShape();
+			StartCoroutine(FinishCo);
 		}
 	}
 
 	private IEnumerator FinishShape()
 	{
 		characterSizeText.transform.parent.gameObject.SetActive(false);
-		yield return StartCoroutine(movement.MoveCenter());
+		yield return StartCoroutine(Movement.MoveCenter());
 		int        numberOfCharacter = 1;
 		int        count             = 0;
 		GameObject finishParent      = new GameObject();
@@ -171,12 +151,12 @@ public class PlayerController : Singleton<PlayerController>
 				if (allCharacters.Count > 0)
 				{
 					int middleCharacter = FindMiddleCharacter();
-					allCharacters[middleCharacter].transform.parent           = finishGroup.transform;
-					allCharacters[middleCharacter].isMoveAble                    = false;
+					allCharacters[middleCharacter].transform.parent                 = finishGroup.transform;
+					allCharacters[middleCharacter].isMoveAble                       = false;
 					allCharacters[middleCharacter].rigidBody.interpolation          = RigidbodyInterpolation.None;
 					allCharacters[middleCharacter].rigidBody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 					allCharacters[middleCharacter].rigidBody.isKinematic            = true;
-					allCharacters[middleCharacter].FinishPlacement(new Vector3(-(numberOfCharacter - 1) * distBTWCharacters / 2 + i * distBTWCharacters, 0f, 0f));
+					allCharacters[middleCharacter].FinishPlacement(new Vector3(-(numberOfCharacter - 1) * distBtwCharacters / 2 + i * distBtwCharacters, 0f, 0f));
 					allCharacters.RemoveAt(middleCharacter);
 				}
 				else
@@ -205,7 +185,7 @@ public class PlayerController : Singleton<PlayerController>
 			yield return null;
 		}
 
-		movement.finishCam.gameObject.SetActive(true);
+		Movement.finishCam.gameObject.SetActive(true);
 	}
 
 	private int FindMiddleCharacter()

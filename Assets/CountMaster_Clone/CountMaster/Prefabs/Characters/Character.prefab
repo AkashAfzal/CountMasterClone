@@ -385,7 +385,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31dca0fcd70264e4c814c09aaf0e7f70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementForce: 100
+  movementForce: 1000
   dead_FX: {fileID: 8494484556252239538}
   groundSpot: {fileID: 5885765889725222705}
   id: -1

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using GameAssets.GameSet.GameDevUtils.Controller.Scripts;
-using GameDevUtils.CharacterController;
 using UnityEngine;
 
 
@@ -102,7 +101,7 @@ namespace GameAssets.GameSet.FinalMomentum.Scripts
 			{
 				IsNotCompleted = true;
 				//MakeUpStack.Instance.HideTextCount();
-				other.transform.root.GetComponent<SplineSlideController>().MoveToFinalPosition();
+				//other.transform.root.GetComponent<SplineSlideController>().MoveToFinalPosition();
 				// Time.timeScale = 0.5f;
 			}
 		}

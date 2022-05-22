@@ -1,15 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SingleGate : GateBase
 {
 
-	public MathOperation operation;
-	public int           value;
+	[SerializeField] MathOperation operation;
+	[SerializeField] int           value;
 
-	[Header("Prefabs")] public GameObject     gate;
-	public                     TMPro.TMP_Text gateText;
+	[SerializeField] GameObject     gate;
+	[SerializeField] TMPro.TMP_Text gateText;
 
 	private void Start()
 	{

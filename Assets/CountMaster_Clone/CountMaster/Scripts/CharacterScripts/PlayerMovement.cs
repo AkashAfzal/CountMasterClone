@@ -1,81 +1,90 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
+using GameAssets.GameSet.GameDevUtils.Controller.Scripts;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
 
-	[Header("Settings")] public float                                minX              = -2.5f;
-	public                      float                                maxX              = 2.5f;
-	public                      float                                forwardSpeed      = 10f;
-	public                      float                                horizontalSpeed   = 7.5f;
-	public                      float                                distanceCamToChar = 40f;
-	[Space(10)] public          bool                                 userCanControl    = true;
-	public                      bool                                 moveForward       = true;
-	public                      bool                                 moveHorizontal    = true;
-	[Space(10)] public          Finish                               finish;
-	public                      Cinemachine.CinemachineVirtualCamera finishCam;
+	public             InputData                            inputs;
+	[Space(10)] public Finish                               finish;
+	public             Cinemachine.CinemachineVirtualCamera finishCam;
 
-	Vector3          charStartPos = Vector3.zero;
-	Vector3          startPoint   = Vector3.zero;
-	Vector3          endPoint     = Vector3.zero;
-	PlayerController _playerController;
+	Vector3          CharStartPos = Vector3.zero;
+	Vector3          StartPoint   = Vector3.zero;
+	Vector3          EndPoint     = Vector3.zero;
+	PlayerController playerController;
 	IEnumerator      fightMoveCo;
-	Camera           _camera;
-	Vector3          inputPoint   = Vector3.zero;
-	float            movableLeft  = 0f;
-	float            movableRight = 0f;
+	Camera           MainCamera;
+	Vector3          InputPoint   = Vector3.zero;
+	float            MovableLeft  = 0f;
+	float            MovableRight = 0f;
+
+	bool    FightStart;
+	Vector3 TargetPos;
 
 	private void Start()
 	{
-		_playerController = GetComponent<PlayerController>();
-		_camera           = Camera.main;
+		playerController = GetComponent<PlayerController>();
+		MainCamera       = Camera.main;
 		StartCoroutine(UpdateBorders());
+		inputs.isBlockAllInput        = false;
+		inputs.isBlockHorizontalInput = false;
 	}
 
 	private void Update()
 	{
-		if (userCanControl)
+		if (!inputs.isBlockAllInput)
 		{
 			Move();
 		}
+
+		if (FightStart && inputs.isBlockAllInput)
+		{
+			var position = transform.position;
+			position           = Vector3.MoveTowards(position, position + TargetPos, 1.5f * Time.deltaTime);
+			transform.position = position;
+		}
 	}
 
-	public virtual void Move()
+	protected virtual void Move()
 	{
-		if (moveForward)
+		if (!inputs.isBlockVerticalInput)
 		{
-			transform.position = Vector3.MoveTowards(transform.position, transform.position + Vector3.forward, forwardSpeed * Time.deltaTime);
+			var position = transform.position;
+			position           = Vector3.MoveTowards(position, position + Vector3.forward, inputs.MoveSpeed * Time.deltaTime);
+			transform.position = position;
 		}
 
-		if (moveHorizontal)
+		if (!inputs.isBlockHorizontalInput)
 		{
-			inputPoint   = Input.mousePosition;
-			inputPoint.z = distanceCamToChar;
+			InputPoint   = Input.mousePosition;
+			InputPoint.z = inputs.CameraOffset;
 			if (Input.GetMouseButtonDown(0))
 			{
-				startPoint   =  _camera.ScreenToWorldPoint(inputPoint);
-				startPoint.x -= _camera.transform.position.x;
-				charStartPos =  transform.localPosition;
+				StartPoint   =  MainCamera.ScreenToWorldPoint(InputPoint);
+				StartPoint.x -= MainCamera.transform.position.x;
+				CharStartPos =  transform.localPosition;
 			}
 
 			if (Input.GetMouseButton(0))
 			{
-				endPoint   =  Camera.main.ScreenToWorldPoint(inputPoint);
-				endPoint.x -= _camera.transform.position.x;
-				float   distance  = endPoint.x - startPoint.x;
-				Vector3 targetPos = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x + distance, transform.localPosition.y, transform.localPosition.z), horizontalSpeed * Time.deltaTime);
-				if ((targetPos.x > movableLeft || transform.position.x < targetPos.x) && (targetPos.x < movableRight || transform.position.x > targetPos.x))
+				EndPoint   =  Camera.main.ScreenToWorldPoint(InputPoint);
+				EndPoint.x -= MainCamera.transform.position.x;
+				float   distance  = EndPoint.x - StartPoint.x;
+				Vector3 targetPos = Vector3.Lerp(transform.localPosition, new Vector3(transform.localPosition.x + distance, transform.localPosition.y, transform.localPosition.z), inputs.MaxHorizontalSpeed * Time.deltaTime);
+				if ((targetPos.x > MovableLeft || transform.position.x < targetPos.x) && (targetPos.x < MovableRight || transform.position.x > targetPos.x))
 				{
 					transform.localPosition =  targetPos;
-					startPoint.x            += transform.localPosition.x - charStartPos.x;
-					charStartPos            =  transform.localPosition;
+					StartPoint.x            += transform.localPosition.x - CharStartPos.x;
+					CharStartPos            =  transform.localPosition;
 				}
 				else
 				{
-					startPoint   =  _camera.ScreenToWorldPoint(inputPoint);
-					startPoint.x -= _camera.transform.position.x;
-					charStartPos =  transform.localPosition;
+					StartPoint   =  MainCamera.ScreenToWorldPoint(InputPoint);
+					StartPoint.x -= MainCamera.transform.position.x;
+					CharStartPos =  transform.localPosition;
 				}
 			}
 		}
@@ -87,7 +96,7 @@ public class PlayerMovement : MonoBehaviour
 		{
 			float leftBorder  = 0f;
 			float rightBorder = 0f;
-			foreach (Character _character in _playerController.allCharacters)
+			foreach (Character _character in playerController.allCharacters)
 			{
 				if (_character.transform.localPosition.x < leftBorder)
 				{
@@ -100,48 +109,30 @@ public class PlayerMovement : MonoBehaviour
 				}
 			}
 
-			movableLeft  = minX - leftBorder;
-			movableRight = maxX - rightBorder;
+			MovableLeft  = inputs.MinXLimit - leftBorder;
+			MovableRight = inputs.MaxXLimit - rightBorder;
 			yield return new WaitForSeconds(1f);
 		}
 	}
 
 	public void FightMove(Transform target)
 	{
-		if (fightMoveCo == null)
-		{
-			fightMoveCo = FightMoveRoutine(target);
-			StartCoroutine(fightMoveCo);
-		}
+		TargetPos  = (target.position - transform.position).normalized;
+		FightStart = true;
 	}
 
 	public void StopFightMove()
 	{
-		if (fightMoveCo != null)
-		{
-			StopCoroutine(fightMoveCo);
-			fightMoveCo = null;
-		}
+		FightStart = false;
 	}
 
-	IEnumerator FightMoveRoutine(Transform target)
-	{
-		Vector3 direction = (target.position - transform.position).normalized;
-		while (!userCanControl)
-		{
-			transform.position = Vector3.MoveTowards(transform.position, transform.position + direction, 1.5f * Time.deltaTime);
-			yield return null;
-		}
-
-		fightMoveCo = null;
-	}
 
 	public IEnumerator MoveCenter()
 	{
-		moveHorizontal = false;
-		while (transform.position != new Vector3(0f, transform.position.y, transform.position.z))
+		inputs.isBlockHorizontalInput = true;
+		while (transform.position != transform.position.SetX(0))
 		{
-			transform.position = Vector3.MoveTowards(transform.position, new Vector3(0f, transform.position.y, transform.position.z), horizontalSpeed * Time.deltaTime);
+			transform.position = Vector3.MoveTowards(transform.position, transform.position.SetX(0), inputs.MaxHorizontalSpeed * Time.deltaTime);
 			yield return null;
 		}
 
@@ -150,33 +141,35 @@ public class PlayerMovement : MonoBehaviour
 
 	private IEnumerator FinishMove()
 	{
-		userCanControl = false;
+		inputs.isBlockAllInput = true;
 		int     count = 0;
 		Vector3 targetPos;
 		while (transform.position != finish.transform.position)
 		{
-			transform.position = Vector3.MoveTowards(transform.position, finish.transform.position, forwardSpeed * Time.deltaTime);
+			Debug.Log(transform.position +" "+ finish.transform.position);
+			transform.position = Vector3.MoveTowards(transform.position, finish.transform.position, inputs.MoveSpeed * Time.deltaTime);
 			yield return null;
 		}
 
-		while (_playerController.finishObjects.Count > 0)
+		Debug.Log("ajkshjkddk");
+		while (playerController.finishObjects.Count > 0)
 		{
 			targetPos = finish.transform.position + new Vector3(0f, 0f, count);
 			while (transform.position != targetPos)
 			{
-				transform.position = Vector3.MoveTowards(transform.position, targetPos, forwardSpeed * Time.deltaTime);
+				transform.position = Vector3.MoveTowards(transform.position, targetPos, inputs.MoveSpeed * Time.deltaTime);
 				yield return null;
 			}
 
 			count++;
 			finish.finishSteps[count].stepCamera.SetActive(true);
-			_playerController.finishObjects[_playerController.finishObjects.Count - 1].parent = null;
-			for (int i = 0; i < _playerController.finishObjects[_playerController.finishObjects.Count - 1].childCount; i++)
+			playerController.finishObjects[playerController.finishObjects.Count - 1].parent = null;
+			for (int i = 0; i < playerController.finishObjects[playerController.finishObjects.Count - 1].childCount; i++)
 			{
-				_playerController.finishObjects[_playerController.finishObjects.Count - 1].GetChild(i).GetComponent<Animator>().SetBool("Run", false);
+				playerController.finishObjects[playerController.finishObjects.Count - 1].GetChild(i).GetComponent<Animator>().SetBool("Run", false);
 			}
 
-			_playerController.finishObjects.RemoveAt(_playerController.finishObjects.Count - 1);
+			playerController.finishObjects.RemoveAt(playerController.finishObjects.Count - 1);
 		}
 
 		if (count - 2 > 0)

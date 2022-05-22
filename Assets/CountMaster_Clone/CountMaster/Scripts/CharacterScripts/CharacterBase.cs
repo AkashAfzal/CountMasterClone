@@ -17,7 +17,8 @@ public abstract class CharacterBase : MonoBehaviour
 	[HideInInspector] public Animator  m_Animator;
 	[HideInInspector] public Transform targetPos;
 	[HideInInspector] public bool      isDead     = false;
-	[HideInInspector] public bool      isMoveAble = false;
+	//[HideInInspector] 
+	public bool      isMoveAble = false;
 
 
 	//Private Fields

@@ -9,20 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8283c20f853d4dedba77c08b7735de1, type: 3}
-  m_Name: Drag Input
+  m_Script: {fileID: 11500000, guid: 99d07cd3d66fd40e6a97277dd83f8f85, type: 3}
+  m_Name: Input Data
   m_EditorClassIdentifier: 
-  isAutoRun: 1
-  moveSpeed: 1210
-  rotationSpeed: 0.1
-  jumpForce: 4
-  sensitivity: 19
-  animationMultiplier: 1
-  maxHorizontalSpeed: 18
-  maxVerticalSpeed: 8
-  verticalAcceleration: 25
-  verticalDeceleration: 25
-  verticalLerpTime: 0.01
+  moveSpeed: 10
+  maxHorizontalSpeed: 7.5
+  clampLimits: {x: -4, y: 4}
+  cameraOffset: 40
   isBlockAllInput: 0
   isBlockVerticalInput: 0
   isBlockHorizontalInput: 0

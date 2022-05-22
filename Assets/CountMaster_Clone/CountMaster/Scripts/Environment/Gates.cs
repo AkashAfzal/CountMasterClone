@@ -1,21 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
 public class Gates : GateBase
 {
 
-	public MathOperation leftOperation;
-	public int           leftValue;
-
-	[Space(10)] public MathOperation rightOperation;
-	public             int           rightValue;
-
-	[Space(10)] [Header("Prefabs")] public GameObject leftGate;
-	public                                 GameObject rightGate;
-	public                                 TMP_Text   leftGateText;
-	public                                 TMP_Text   rightGateText;
+	[SerializeField] MathOperation leftOperation;
+	[SerializeField] int           leftValue;
+	[SerializeField] MathOperation rightOperation;
+	[SerializeField] int           rightValue;
+	
+	[SerializeField] GameObject    leftGate;
+	[SerializeField] GameObject    rightGate;
+	[SerializeField] TMP_Text      leftGateText;
+	[SerializeField] TMP_Text      rightGateText;
 
 
 	private void Start()
