@@ -27,7 +27,7 @@ public abstract class ObstacleBase : MonoBehaviour
 	{
 		while (true)
 		{
-			transform.Rotate(rotDir * rotateSpeed * Time.deltaTime);
+			
 			yield return null;
 		}
 	}
