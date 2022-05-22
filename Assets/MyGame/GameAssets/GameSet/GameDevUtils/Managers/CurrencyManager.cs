@@ -28,13 +28,13 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 			TotalCurrency = totalCurrency;
 			CoinSavePrefs = currencyName;
 		
-			if (!DataManager.Instance.HasDataAgainstKey(CoinSavePrefs))
+			if (!DataSaveManager.Instance.HasDataAgainstKey(CoinSavePrefs))
 			{
 				SaveCurrency();
 			}
 			else
 			{
-				totalCurrency = DataManager.Instance.GetIntData(CoinSavePrefs);
+				totalCurrency = DataSaveManager.Instance.GetIntData(CoinSavePrefs);
 			}
 		}
 
@@ -52,7 +52,7 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 
 		private void SaveCurrency()
 		{
-			DataManager.Instance.SaveData(CoinSavePrefs, TotalCurrency);
+			DataSaveManager.Instance.SaveData(CoinSavePrefs, TotalCurrency);
 		}
 	}
 

@@ -1,5 +1,8 @@
+using System;
 using DG.Tweening;
+using GameAssets.GameSet.GameDevUtils.Managers;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Character : CharacterBase
 {
@@ -10,7 +13,21 @@ public class Character : CharacterBase
 
 	private bool IsJumping = false;
 
+	void OnEnable() => GameManager.onGamePlayEvent += OnGameStart;
+
+	void OnDisable() => GameManager.onGamePlayEvent -= OnGameStart;
+
+
 	protected override void Start()
+	{
+		if (GameManager.Instance.GameCurrentState == GameState.Gameplay || GameManager.Instance.GameCurrentState == GameState.FinalMomentum)
+		{
+			StartMoving();
+			targetPos = transform.parent;
+		}
+	}
+
+	private void OnGameStart()
 	{
 		StartMoving();
 		targetPos = transform.parent;

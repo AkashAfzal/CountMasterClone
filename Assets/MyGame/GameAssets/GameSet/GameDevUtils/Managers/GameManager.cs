@@ -23,26 +23,23 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 
 	}
 
-	public class GameManager : MonoBehaviour
+	public class GameManager : Singleton<GameManager>
 	{
-
-		public static GameManager Instance { get; private set; }
 
 		[SerializeField] GameState gameCurrentState = GameState.MainMenu;
 		
-
 		public GameState GameCurrentState
 		{
 			get => gameCurrentState;
 			private set
 			{
 				gameCurrentState = value;
-				onGameStateChangedEvent?.Invoke(gameCurrentState);
+				OnGameStateChangedEvent?.Invoke(gameCurrentState);
 			}
 		}
 
 
-		static UnityEvent<GameState> onGameStateChangedEvent = new UnityEvent<GameState>();
+		static readonly UnityEvent<GameState> OnGameStateChangedEvent = new UnityEvent<GameState>();
 		
 		public LevelManager levelManager;
 		public UIManager    uiManager;
@@ -57,55 +54,39 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 		bool       IsLevelCompleteNotInvoke;
 
 
-		public delegate void OnMainMenuEvent();
+		public delegate void OnMainMenu();
 
-		public static event OnMainMenuEvent onMainMenuEvent;
+		public static event OnMainMenu onMainMenuEvent;
 
-		public delegate void OnGamePlayEvent();
+		public delegate void OnGamePlay();
 
-		public static event OnGamePlayEvent onGamePlayEvent;
+		public static event OnGamePlay onGamePlayEvent;
 
-		public delegate void OnPauseEvent();
+		public delegate void OnPause();
 
-		public static event OnPauseEvent onPauseEvent;
-
-
-		public delegate void OnFinalMomentumEvent();
-
-		public static event OnFinalMomentumEvent onFinalMomentumEvent;
-
-		public delegate void OnCompleteEvent();
-
-		public static event OnCompleteEvent onCompleteEvent;
-
-		public delegate void OnFailedEvent();
-
-		public static event OnFailedEvent onFailedEvent;
+		public static event OnPause onPauseEvent;
 
 
-		private void Awake()
-		{
-			if (Instance == null)
-			{
-				Instance = this;
-				DontDestroyOnLoad(gameObject);
-			}
-			else
-			{
-				DestroyImmediate(gameObject);
-			}
-		}
+		public delegate void OnFinalMomentum();
+
+		public static event OnFinalMomentum onFinalMomentumEvent;
+
+		public delegate void OnComplete();
+
+		public static event OnComplete onCompleteEvent;
+
+		public delegate void OnFailed();
+
+		public static event OnFailed onFailedEvent;
+		
 
 		void OnEnable()
 		{
 			Application.targetFrameRate = 60;
-			onGameStateChangedEvent.AddListener(OnGameStateChanged);
+			OnGameStateChangedEvent.AddListener(OnGameStateChanged);
 		}
 
-		void OnDisable()
-		{
-			onGameStateChangedEvent.RemoveAllListeners();
-		}
+		void OnDisable()=> OnGameStateChangedEvent.RemoveAllListeners();
 
 		void Start()
 		{

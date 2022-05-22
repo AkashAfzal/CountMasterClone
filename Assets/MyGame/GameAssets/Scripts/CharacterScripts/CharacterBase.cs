@@ -10,15 +10,15 @@ public abstract class CharacterBase : MonoBehaviour
 	[SerializeField] private GameObject dead_FX;
 	[SerializeField] public  GameObject groundSpot;
 
-	
+
 	//Public Hidden Fields
-	[HideInInspector] public int       id         = -1;
+	[HideInInspector] public int       id = -1;
 	[HideInInspector] public Rigidbody rigidBody;
 	[HideInInspector] public Animator  m_Animator;
 	[HideInInspector] public Transform targetPos;
-	[HideInInspector] public bool      isDead     = false;
+	[HideInInspector] public bool      isDead = false;
 	//[HideInInspector] 
-	public bool      isMoveAble = false;
+	public bool isMoveAble = false;
 
 
 	//Private Fields
@@ -33,18 +33,18 @@ public abstract class CharacterBase : MonoBehaviour
 
 	private void Update()
 	{
-		// if (GameManager.Instance.GameCurrentState == GameState.Gameplay || GameManager.Instance.GameCurrentState == GameState.FinalMomentum)
-		// {
-		DoUpdate();
-		// }
+		if (GameManager.Instance.GameCurrentState == GameState.Gameplay || GameManager.Instance.GameCurrentState == GameState.FinalMomentum)
+		{
+			DoUpdate();
+		}
 	}
 
 	void FixedUpdate()
 	{
-		// if (GameManager.Instance.GameCurrentState == GameState.Gameplay || GameManager.Instance.GameCurrentState == GameState.FinalMomentum)
-		// {
-		DoFixedUpdate();
-		// }
+		if (GameManager.Instance.GameCurrentState == GameState.Gameplay || GameManager.Instance.GameCurrentState == GameState.FinalMomentum)
+		{
+			DoFixedUpdate();
+		}
 	}
 
 	protected virtual void DoUpdate()

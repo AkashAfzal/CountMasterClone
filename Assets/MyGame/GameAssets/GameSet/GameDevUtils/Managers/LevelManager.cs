@@ -26,12 +26,12 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 		{
 			if (!isTesting)
 			{
-				if (!DataManager.Instance.HasDataAgainstKey(Level_Pref))
+				if (!DataSaveManager.Instance.HasDataAgainstKey(Level_Pref))
 				{
-					DataManager.Instance.SaveData(Level_Pref, 1);
+					DataSaveManager.Instance.SaveData(Level_Pref, 1);
 				}
 
-				return DataManager.Instance.GetIntData(Level_Pref);
+				return DataSaveManager.Instance.GetIntData(Level_Pref);
 			}
 			else
 				return currentLevelNumber;
@@ -41,12 +41,12 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 		{
 			if (!isTesting)
 			{
-				if (!DataManager.Instance.HasDataAgainstKey(PlayLevel_Pref))
+				if (!DataSaveManager.Instance.HasDataAgainstKey(PlayLevel_Pref))
 				{
-					DataManager.Instance.SaveData(PlayLevel_Pref, 1);
+					DataSaveManager.Instance.SaveData(PlayLevel_Pref, 1);
 				}
 
-				return DataManager.Instance.GetIntData(PlayLevel_Pref);
+				return DataSaveManager.Instance.GetIntData(PlayLevel_Pref);
 			}
 			else
 				return currentLevelNumber;
@@ -54,15 +54,15 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 
 		public void NextUnlockLevel()
 		{
-			int level     = DataManager.Instance.GetIntData(Level_Pref)     + 1;
-			int playLevel = DataManager.Instance.GetIntData(PlayLevel_Pref) + 1;
+			int level     = DataSaveManager.Instance.GetIntData(Level_Pref)     + 1;
+			int playLevel = DataSaveManager.Instance.GetIntData(PlayLevel_Pref) + 1;
 			if (playLevel > allLevels.Length)
 			{
 				playLevel = 1;
 			}
 
-			DataManager.Instance.SaveData(Level_Pref,     level);
-			DataManager.Instance.SaveData(PlayLevel_Pref, playLevel);
+			DataSaveManager.Instance.SaveData(Level_Pref,     level);
+			DataSaveManager.Instance.SaveData(PlayLevel_Pref, playLevel);
 		}
 
 	}

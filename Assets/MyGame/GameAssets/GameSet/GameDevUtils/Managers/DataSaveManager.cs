@@ -5,7 +5,7 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 {
 
 
-	public class DataManager : Singleton<DataManager>
+	public class DataSaveManager : Singleton<DataSaveManager>
 	{
 
 		public bool HasDataAgainstKey(string key) => PlayerPrefs.HasKey(key);

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using GameAssets.GameSet.GameDevUtils.Managers;
 using UnityEngine;
 using TMPro;
 
@@ -18,7 +19,7 @@ public class PlayerController : Singleton<PlayerController>
 	[HideInInspector] public int             currentCharacterSize = 0;
 	[HideInInspector] public List<Character> allCharacters        = new List<Character>();
 	//[HideInInspector] 
-	public List<Transform> finishObjects        = new List<Transform>();
+	public List<Transform> finishObjects = new List<Transform>();
 
 
 	//Private Fields 
@@ -64,18 +65,6 @@ public class PlayerController : Singleton<PlayerController>
 		});
 	}
 
-	public void RemoveCharacter(int size)
-	{
-		for (int i = 0; i < size; i++)
-		{
-			if (allCharacters.Count > 0)
-			{
-				allCharacters[0].gameObject.SetActive(false);
-				CharacterDeath(allCharacters[0].id);
-			}
-		}
-	}
-
 	public void CharacterDeath(int id)
 	{
 		allCharacters.RemoveAt(id);
@@ -93,7 +82,7 @@ public class PlayerController : Singleton<PlayerController>
 			if (IsFighting)
 				TargetEnemyGroup.Victory();
 			Movement.userCanControl = false;
-			LevelController.instance.Fail();
+			GameManager.Instance.ChangeGameState(GameState.Fail);
 		}
 	}
 
@@ -151,14 +140,14 @@ public class PlayerController : Singleton<PlayerController>
 			{
 				if (allCharacters.Count > 0)
 				{
-					int middleCharacter = FindMiddleCharacter();
-					allCharacters[middleCharacter].transform.parent                 = finishGroup.transform;
-					allCharacters[middleCharacter].isMoveAble                       = false;
-					allCharacters[middleCharacter].rigidBody.interpolation          = RigidbodyInterpolation.None;
-					allCharacters[middleCharacter].rigidBody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
-					allCharacters[middleCharacter].rigidBody.isKinematic            = true;
-					allCharacters[middleCharacter].FinishPlacement(new Vector3(-(numberOfCharacter - 1) * distBtwCharacters / 2 + i * distBtwCharacters, 0f, 0f));
-					allCharacters.RemoveAt(middleCharacter);
+					int chracterIndex = 0;
+					allCharacters[chracterIndex].transform.parent                 = finishGroup.transform;
+					allCharacters[chracterIndex].isMoveAble                       = false;
+					allCharacters[chracterIndex].rigidBody.interpolation          = RigidbodyInterpolation.None;
+					allCharacters[chracterIndex].rigidBody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+					allCharacters[chracterIndex].rigidBody.isKinematic            = true;
+					allCharacters[chracterIndex].FinishPlacement(new Vector3(-(numberOfCharacter - 1) * distBtwCharacters / 2 + i * distBtwCharacters, 0f, 0f));
+					allCharacters.RemoveAt(chracterIndex);
 				}
 				else
 					break;
@@ -187,24 +176,6 @@ public class PlayerController : Singleton<PlayerController>
 		}
 
 		Movement.finishCam.gameObject.SetActive(true);
-	}
-
-	private int FindMiddleCharacter()
-	{
-		float distance = Vector3.Distance(allCharacters[0].transform.position, transform.position);
-		int   index    = 0;
-		for (int i = 1; i < allCharacters.Count; i++)
-		{
-			if (Vector3.Distance(allCharacters[i].transform.position, transform.position) < distance)
-			{
-				distance = Vector3.Distance(allCharacters[i].transform.position, transform.position);
-				index    = i;
-				if (distance < 0.5)
-					return index;
-			}
-		}
-
-		return index;
 	}
 
 }

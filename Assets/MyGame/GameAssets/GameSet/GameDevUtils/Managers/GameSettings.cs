@@ -48,24 +48,24 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 		{
 			set
 			{
-				DataManager.Instance.SaveData("toggleStatusBg", value ? 1 : 0); 
+				DataSaveManager.Instance.SaveData("toggleStatusBg", value ? 1 : 0); 
 				SoundManager.Instance.SetBgSoundSetting(value);
 			}
-			get => DataManager.Instance.GetIntData("toggleStatusBg") != 0;
+			get => DataSaveManager.Instance.GetIntData("toggleStatusBg") != 0;
 		}
 		bool ToggleStatusSfx
 		{
 			set
 			{
-				DataManager.Instance.SaveData("toggleStatusSFX", value ? 1 : 0);
+				DataSaveManager.Instance.SaveData("toggleStatusSFX", value ? 1 : 0);
 				SoundManager.Instance.SetSfxSoundSetting(value);
 			}
-			get => DataManager.Instance.GetIntData("toggleStatusSFX") != 0;
+			get => DataSaveManager.Instance.GetIntData("toggleStatusSFX") != 0;
 		}
 		bool ToggleStatusHaptic
 		{ 
-			set => DataManager.Instance.SaveData("toggleStatusHaptic", value ? 1 : 0);
-			get => DataManager.Instance.GetIntData("toggleStatusHaptic") != 0;
+			set => DataSaveManager.Instance.SaveData("toggleStatusHaptic", value ? 1 : 0);
+			get => DataSaveManager.Instance.GetIntData("toggleStatusHaptic") != 0;
 		}
 
 		public bool IsHapticEnable   => ToggleStatusHaptic;
@@ -85,7 +85,7 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 
 		private void Start()
 		{
-			if (!DataManager.Instance.HasDataAgainstKey("toggleStatusHaptic"))
+			if (!DataSaveManager.Instance.HasDataAgainstKey("toggleStatusHaptic"))
 			{
 				ToggleStatusBg     = true;
 				ToggleStatusSfx    = true;

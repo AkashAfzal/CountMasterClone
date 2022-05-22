@@ -1,14 +1,14 @@
 using System.Collections;
-using System.Collections.Generic;
 using GameAssets.GameSet.GameDevUtils.Controller.Scripts;
+using GameAssets.GameSet.GameDevUtils.Managers;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
 
-	public             InputData                            inputs;
-	[Space(10)] public Finish                               finish;
-	public             Cinemachine.CinemachineVirtualCamera finishCam;
+	public InputData                            inputs;
+	public Finish                               finish;
+	public Cinemachine.CinemachineVirtualCamera finishCam;
 
 	Vector3          CharStartPos = Vector3.zero;
 	Vector3          StartPoint   = Vector3.zero;
@@ -27,37 +27,46 @@ public class PlayerMovement : MonoBehaviour
 	public bool moveForward;
 	public bool moveHorizontal;
 
-	private void Start()
+	void OnEnable() => GameManager.onGamePlayEvent += StartGame;
+
+	void OnDisable() => GameManager.onGamePlayEvent -= StartGame;
+
+	private void StartGame()
 	{
 		playerController = GetComponent<PlayerController>();
 		MainCamera       = Camera.main;
-		StartCoroutine(UpdateBorders());
+		StartCoroutine(UpdateLeftRightBoundary());
 	}
 
 	private void Update()
 	{
-		if (userCanControl)
+		if (GameManager.Instance.GameCurrentState == GameState.Gameplay || GameManager.Instance.GameCurrentState == GameState.FinalMomentum)
 		{
-			Move();
-		}
+			if (userCanControl)
+			{
+				ForwardMovement();
+				HorizontalMovement();
+			}
 
-		if (FightStart && !userCanControl)
-		{
-			var position = transform.position;
-			position           = Vector3.MoveTowards(position, position + TargetPos, 1.5f * Time.deltaTime);
-			transform.position = position;
+			if (FightStart && !userCanControl)
+			{
+				var position = transform.position;
+				position           = Vector3.MoveTowards(position, position + TargetPos, 1.5f * Time.deltaTime);
+				transform.position = position;
+			}
 		}
 	}
 
-	protected virtual void Move()
+	private void ForwardMovement()
 	{
-		if (moveForward)
-		{
-			var position = transform.position;
-			position           = Vector3.MoveTowards(position, position + Vector3.forward, inputs.MoveSpeed * Time.deltaTime);
-			transform.position = position;
-		}
+		if (!moveForward) return;
+		var position = transform.position;
+		position           = Vector3.MoveTowards(position, position + Vector3.forward, inputs.MoveSpeed * Time.deltaTime);
+		transform.position = position;
+	}
 
+	void HorizontalMovement()
+	{
 		if (moveHorizontal)
 		{
 			InputPoint   = Input.mousePosition;
@@ -91,22 +100,22 @@ public class PlayerMovement : MonoBehaviour
 		}
 	}
 
-	private IEnumerator UpdateBorders()
+	private IEnumerator UpdateLeftRightBoundary()
 	{
-		while (!LevelController.instance.isLevelFinished)
+		while (GameManager.Instance.GameCurrentState == GameState.Gameplay)
 		{
 			float leftBorder  = 0f;
 			float rightBorder = 0f;
-			foreach (Character _character in playerController.allCharacters)
+			foreach (Character character in playerController.allCharacters)
 			{
-				if (_character.transform.localPosition.x < leftBorder)
+				if (character.transform.localPosition.x < leftBorder)
 				{
-					leftBorder = _character.transform.localPosition.x;
+					leftBorder = character.transform.localPosition.x;
 				}
 
-				if (_character.transform.localPosition.x > rightBorder)
+				if (character.transform.localPosition.x > rightBorder)
 				{
-					rightBorder = _character.transform.localPosition.x;
+					rightBorder = character.transform.localPosition.x;
 				}
 			}
 
@@ -175,12 +184,12 @@ public class PlayerMovement : MonoBehaviour
 			yield return new WaitForSeconds(0.5f);
 			finish.finishSteps[count - 2].particles.SetActive(true);
 			yield return new WaitForSeconds(1.5f);
-			LevelController.instance.Win();
+			GameManager.Instance.ChangeGameState(GameState.Win);
 		}
 		else
 		{
 			yield return new WaitForSeconds(1f);
-			LevelController.instance.Win();
+			GameManager.Instance.ChangeGameState(GameState.Win);
 		}
 	}
 
