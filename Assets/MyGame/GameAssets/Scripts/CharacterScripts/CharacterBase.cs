@@ -79,6 +79,7 @@ public abstract class CharacterBase : MonoBehaviour
 
 	public virtual void Die()
 	{
+		SoundManager.Instance.PlayDeadSound();
 		dead_FX.transform.parent = null;
 		dead_FX.SetActive(true);
 		groundSpot.SetActive(true);

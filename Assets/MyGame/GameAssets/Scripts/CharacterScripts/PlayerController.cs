@@ -82,6 +82,7 @@ public class PlayerController : Singleton<PlayerController>
 			if (IsFighting)
 				TargetEnemyGroup.Victory();
 			Movement.userCanControl = false;
+			SoundManager.Instance.PlayRunSounds(false);
 			GameManager.Instance.ChangeGameState(GameState.Fail);
 		}
 	}
@@ -128,6 +129,7 @@ public class PlayerController : Singleton<PlayerController>
 		finishParent.transform.parent        = transform;
 		finishParent.transform.localPosition = Vector3.zero;
 		finishParent.transform.eulerAngles   = Vector3.zero;
+		SoundManager.Instance.PlayOneShot(SoundManager.Instance.constructPyramid,0.7f);
 		while (allCharacters.Count > 0)
 		{
 			GameObject finishGroup = new GameObject();

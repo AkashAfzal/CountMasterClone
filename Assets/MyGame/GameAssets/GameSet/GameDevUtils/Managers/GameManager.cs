@@ -131,7 +131,7 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 					if (IsLevelCompleteNotInvoke) return;
 					IsLevelCompleteNotInvoke = true;
 					await Task.Delay(TimeSpan.FromSeconds(beforeLevelCompleteDelay));
-					SoundManager.Instance.PlayOneShot(SoundManager.Instance.winClip, 1);
+					SoundManager.Instance.PlayOneShot(SoundManager.Instance.winPanelOpen, 1);
 					uiManager.EnableUIScreen(GameState.Win);
 					
 					// Elephant.LevelCompleted(InfinityCurrentLevel);

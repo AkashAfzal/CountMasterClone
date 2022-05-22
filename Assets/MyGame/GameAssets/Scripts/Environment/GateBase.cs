@@ -1,3 +1,4 @@
+using GameAssets.GameSet.GameDevUtils.Managers;
 using UnityEngine;
 
 public abstract class GateBase : MonoBehaviour
@@ -18,6 +19,7 @@ public abstract class GateBase : MonoBehaviour
 
 	protected virtual void MathCall(MathOperation _op, int val)
 	{
+		SoundManager.Instance.PlayGrowSound();
 		PlayerController.Instance.AddNewCharacter(_op == MathOperation.Addition ? val : PlayerController.Instance.currentCharacterSize * val - PlayerController.Instance.currentCharacterSize, false);
 	}
 

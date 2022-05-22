@@ -36,6 +36,7 @@ public class PlayerMovement : MonoBehaviour
 		playerController = GetComponent<PlayerController>();
 		MainCamera       = Camera.main;
 		StartCoroutine(UpdateLeftRightBoundary());
+		SoundManager.Instance.PlayRunSounds(true);
 	}
 
 	private void Update()
@@ -127,6 +128,7 @@ public class PlayerMovement : MonoBehaviour
 
 	public void FightMove(Transform target)
 	{
+		SoundManager.Instance.PlayRunSounds(false);
 		TargetPos  = (target.position - transform.position).normalized;
 		FightStart = true;
 	}
@@ -134,6 +136,13 @@ public class PlayerMovement : MonoBehaviour
 	public void StopFightMove()
 	{
 		FightStart = false;
+		SoundManager.Instance.PlayRunSounds(true);
+		
+		//Reset Input;
+		InputPoint   =  Input.mousePosition;
+		StartPoint   =  MainCamera.ScreenToWorldPoint(InputPoint);
+		StartPoint.x -= MainCamera.transform.position.x;
+		CharStartPos =  transform.localPosition;
 	}
 
 	public IEnumerator MoveCenter()
@@ -145,6 +154,7 @@ public class PlayerMovement : MonoBehaviour
 			yield return null;
 		}
 
+		SoundManager.Instance.PlayRunSounds(false);
 		StartCoroutine(FinishMove());
 	}
 
@@ -176,12 +186,14 @@ public class PlayerMovement : MonoBehaviour
 				playerController.finishObjects[playerController.finishObjects.Count - 1].GetChild(i).GetComponent<Animator>().SetBool("Run", false);
 			}
 
+			SoundManager.Instance.PlayStairsUpSound();
 			playerController.finishObjects.RemoveAt(playerController.finishObjects.Count - 1);
 		}
 
 		if (count - 2 > 0)
 		{
 			yield return new WaitForSeconds(0.5f);
+			SoundManager.Instance.PlayOneShot(SoundManager.Instance.confettiClip, 0.7f);
 			finish.finishSteps[count - 2].particles.SetActive(true);
 			yield return new WaitForSeconds(1.5f);
 			GameManager.Instance.ChangeGameState(GameState.Win);

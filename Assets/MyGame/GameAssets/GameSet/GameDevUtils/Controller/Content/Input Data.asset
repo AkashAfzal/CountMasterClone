@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Input Data
   m_EditorClassIdentifier: 
   moveSpeed: 10
-  maxHorizontalSpeed: 7.5
+  maxHorizontalSpeed: 18
   clampLimits: {x: -4, y: 4}
   cameraOffset: 40
   isBlockAllInput: 0
