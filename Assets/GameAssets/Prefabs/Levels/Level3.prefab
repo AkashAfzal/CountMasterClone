@@ -11590,7 +11590,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1757679611856845255, guid: 7442bd1a7c28cf54ca9798bca9457529, type: 3}
       propertyPath: leftValue
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1757679611856845255, guid: 7442bd1a7c28cf54ca9798bca9457529, type: 3}
       propertyPath: rightValue

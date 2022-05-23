@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using DG.Tweening;
-using MoreMountains.NiceVibrations;
 using GameAnalyticsSDK;
 using UnityEngine;
 using UnityEngine.Events;
@@ -135,7 +134,6 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 					uiManager.EnableUIScreen(GameState.Win);
 					
 					GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete, "LevelComplete", InfinityCurrentLevel);
-					Haptic(HapticTypes.Success);
 					NextUnlockLevel();
 					onCompleteEvent?.Invoke();
 					break;
@@ -147,18 +145,8 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 					uiManager.EnableUIScreen(GameState.Fail);
 
 					GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, "LevelFail", InfinityCurrentLevel);
-					Haptic(HapticTypes.Failure);
 					onFailedEvent?.Invoke();
 					break;
-			}
-		}
-
-
-		public void Haptic(HapticTypes type)
-		{
-			if (GameSettings.Instance.IsHapticEnable)
-			{
-				MMVibrationManager.Haptic(type);
 			}
 		}
 
