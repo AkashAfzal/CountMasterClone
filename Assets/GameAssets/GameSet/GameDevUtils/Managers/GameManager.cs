@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using DG.Tweening;
-// using ElephantSDK;
-// using GameAnalyticsSDK;
+using MoreMountains.NiceVibrations;
+using GameAnalyticsSDK;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -134,9 +134,8 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 					SoundManager.Instance.PlayOneShot(SoundManager.Instance.winPanelOpen, 1);
 					uiManager.EnableUIScreen(GameState.Win);
 					
-					// Elephant.LevelCompleted(InfinityCurrentLevel);
-					// GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete, "LevelComplete", InfinityCurrentLevel);
-					// HapticFeedback.Generate(UIFeedbackType.Success);
+					GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete, "LevelComplete", InfinityCurrentLevel);
+					Haptic(HapticTypes.Success);
 					NextUnlockLevel();
 					onCompleteEvent?.Invoke();
 					break;
@@ -147,11 +146,19 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 					SoundManager.Instance.PlayOneShot(SoundManager.Instance.failClip, 1);
 					uiManager.EnableUIScreen(GameState.Fail);
 
-					// Elephant.LevelFailed(InfinityCurrentLevel);
-					// GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, "LevelFail", InfinityCurrentLevel);
-					// HapticFeedback.Generate(UIFeedbackType.Error);
+					GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, "LevelFail", InfinityCurrentLevel);
+					Haptic(HapticTypes.Failure);
 					onFailedEvent?.Invoke();
 					break;
+			}
+		}
+
+
+		public void Haptic(HapticTypes type)
+		{
+			if (GameSettings.Instance.IsHapticEnable)
+			{
+				MMVibrationManager.Haptic(type);
 			}
 		}
 
@@ -159,8 +166,7 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 		private void LoadLevelAtStart()
 		{
 			levelManager.LoadLevelAtStart();
-			// Elephant.LevelStarted(InfinityCurrentLevel);
-			// GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, "LevelStart", InfinityCurrentLevel);
+			GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, "LevelStart", InfinityCurrentLevel);
 		}
 
 
@@ -179,7 +185,6 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 		public void Restart()
 		{
 			SoundManager.Instance.PlayButtonSound();
-			//followCameraAsset.ResetCameraValue();
 			SceneManager.LoadScene(0);
 		}
 
@@ -188,7 +193,6 @@ namespace GameAssets.GameSet.GameDevUtils.Managers
 		{
 			levelManager.NextUnlockLevel();
 			SoundManager.Instance.PlayButtonSound();
-			//followCameraAsset.ResetCameraValue();
 			SceneManager.LoadScene(0);
 		}
 
