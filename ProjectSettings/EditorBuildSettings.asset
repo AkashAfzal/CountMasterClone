@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/MyGame/Scene/CountMaster.unity
+    path: Assets/Scene/CountMaster.unity
     guid: 9503b2c3910ee74408f98eb51cee26e4
   m_configObjects: {}
