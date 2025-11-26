@@ -1,5 +1,7 @@
 # [Count Master Clone]
-[In this project is a clone of count master game
+In this project is a clone of count master game in URP
 Repo have:
 - Controller with proper characters with animations
-- Few Levels]
+- Ui Integrated
+- Sounds and Particles Integrated
+- Few Levels
